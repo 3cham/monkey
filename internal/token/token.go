@@ -21,6 +21,8 @@ const (
 	SLASH    = "/"
 	LT       = "<"
 	GT       = ">"
+	EQUAL    = "=="
+	INEQUAL  = "!="
 
 	COMMA     = ","
 	SEMICOLON = ";"
