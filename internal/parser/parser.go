@@ -7,12 +7,20 @@ import (
 	"monkey/internal/token"
 )
 
+type (
+	prefixParseFn func() ast.Expression
+	infixParseFn  func() ast.Expression
+)
+
 type Parser struct {
 	l      *lexer.Lexer
 	errors []string
 
 	curToken  token.Token
 	peekToken token.Token
+
+	prefixParseFns map[token.TokenType]prefixParseFn
+	infixParseFns  map[token.TokenType]infixParseFn
 }
 
 func New(l *lexer.Lexer) *Parser {
@@ -119,4 +127,12 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	}
 
 	return stmt
+}
+
+func (p *Parser) registerPrefix(tType token.TokenType, fn prefixParseFn) {
+	p.prefixParseFns[tType] = fn
+}
+
+func (p *Parser) registerInfix(tType token.TokenType, fn infixParseFn) {
+	p.infixParseFns[tType] = fn
 }
