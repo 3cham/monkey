@@ -4,4 +4,4 @@
 
 My attempt to implement this book: https://interpreterbook.com/
 
-Progress: ![](https://geps.dev/progress/28)
+Progress: ![](https://geps.dev/progress/33)
