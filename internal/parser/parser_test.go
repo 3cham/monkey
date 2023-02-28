@@ -473,3 +473,108 @@ false;
 		testLiteralExpression(t, exp, tt.expectedValue)
 	}
 }
+
+func TestIfExpression(t *testing.T) {
+	input := `if (x > y) { x }`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements does not have 1 statement, got=%d", len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+
+	if !ok {
+		t.Fatalf("program.Statements[0] is not an ast.ExpressionStatement, got=%T", program.Statements[0])
+	}
+
+	exp, ok := stmt.Expression.(*ast.IfExpression)
+	if !ok {
+		t.Fatalf("stmt.Expression is not an ast.IfExpression, got=%T", stmt)
+	}
+
+	if exp.Token.Literal != "if" {
+		t.Fatalf("Parser cannot parse if statement")
+	}
+
+	if !testInfixExpression(t, exp.Condition, "x", ">", "y") {
+		return
+	}
+
+	if len(exp.Consequence.Statements) != 1 {
+		t.Fatalf("exp.Consequence does not have 1 statement, got=%d", len(exp.Consequence.Statements))
+	}
+
+	conseq, ok := exp.Consequence.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("exp.Consequence.Statements[0] is not an ast.ExpressionStatement, got=%T", exp.Consequence.Statements[0])
+	}
+
+	if !testIdentifier(t, conseq.Expression, "x") {
+		return
+	}
+
+	if exp.Alternative != nil {
+		t.Fatalf("exp.Alternative is not nil, got=%+v", exp.Alternative)
+	}
+}
+
+func TestIfElseExpression(t *testing.T) {
+	input := `if (x > y) { x } else { y }`
+
+	l := lexer.New(input)
+	p := New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements does not have 1 statement, got=%d", len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+
+	if !ok {
+		t.Fatalf("program.Statements[0] is not an ast.ExpressionStatement, got=%T", program.Statements[0])
+	}
+
+	exp, ok := stmt.Expression.(*ast.IfExpression)
+	if !ok {
+		t.Fatalf("stmt.Expression is not an ast.IfExpression, got=%T", stmt)
+	}
+
+	if exp.Token.Literal != "if" {
+		t.Fatalf("Parser cannot parse if statement")
+	}
+
+	if !testInfixExpression(t, exp.Condition, "x", ">", "y") {
+		return
+	}
+
+	if len(exp.Consequence.Statements) != 1 {
+		t.Fatalf("exp.Consequence does not have 1 statement, got=%d", len(exp.Consequence.Statements))
+	}
+
+	conseq, ok := exp.Consequence.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("exp.Consequence.Statements[0] is not an ast.ExpressionStatement, got=%T", exp.Consequence.Statements[0])
+	}
+
+	if !testIdentifier(t, conseq.Expression, "x") {
+		return
+	}
+
+	alter, ok := exp.Alternative.Statements[0].(*ast.ExpressionStatement)
+
+	if !ok {
+		t.Fatalf("exp.Alternative is not an ast.ExpressionStatement, got=%T", exp.Alternative)
+	}
+	if !testIdentifier(t, alter.Expression, "y") {
+		return
+	}
+}
